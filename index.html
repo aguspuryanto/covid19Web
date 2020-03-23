@@ -46,7 +46,7 @@
     <main role="main" class="container">
 
     <div class="starter-template">
-        <h1>Tracking Coronavirus COVID-19</h1>
+        <h1>Data Kasus Coronavirus di Indonesia</h1>
         <p class="lead">Last Update :<span id="lastUpdate"></span></p>
         <div class="container">
             <div class="row"> 
@@ -71,10 +71,10 @@
                     <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Countries</th>
-                        <th scope="col">Confirmed</th>
-                        <th scope="col">Recovered</th>
-                        <th scope="col">Deaths</th>
+                        <th scope="col">PROVINSI</th>
+                        <th scope="col">POSITIF</th>
+                        <th scope="col">SEMBUH</th>
+                        <th scope="col">MENINGGAL</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -86,43 +86,14 @@
 
     </main><!-- /.container -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
-function makeAjaxCall(url, methodType, callback){
-    return $.ajax({
-        url : url,
-        method : methodType,
-        dataType : "json"
-    })
-}
-
-// git hub url to get btford details
-var URL = "https://covid19.mathdro.id/api/";
-makeAjaxCall(URL, "GET").then(function(respJson){
-    // console.log(respJson);
-    document.getElementById("confirmed").innerHTML = respJson.confirmed.value.toLocaleString();
-    document.getElementById("recovered").innerHTML = respJson.recovered.value.toLocaleString();
-    document.getElementById("deaths").innerHTML = respJson.deaths.value.toLocaleString();
-    document.getElementById("lastUpdate").innerHTML = new Date(respJson.lastUpdate).toDateString();
-}, function(reason){
-    console.log("error in processing your request", reason);
-});
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script>
 function doTheThing() {
-    var date = new Date();
-    date.setDate(date.getDate() - 1);
-    var newdate = [date.getMonth() + 1, ('0' + date.getDate()).slice(-2), date.getFullYear()].join('-');
-    // console.log("date:", newdate);
-    
-    // return JSON.parse(localStorage.getItem('doTheThing'));
     // https://api.kawalcorona.com/
     return new Promise((resolve, reject) => {
         $.ajax({
-        // url: "https://covid19.mathdro.id/api/daily/" + newdate,
-        url: "https://api.kawalcorona.com/",
+        url: "https://api.kawalcorona.com/indonesia/provinsi/",
         success: function(data) {
-            // console.log("data", data);
             resolve(data)
         },
         error: function(error) {
@@ -134,31 +105,25 @@ function doTheThing() {
 
 doTheThing().then(data => {
     var table = "";
-    // Object.keys(data).forEach(function(xitem, i) {
-    //     var deathsRate = (data[i]['deaths']/data[i]['confirmed'])*100 || 0;
-    //     var recoveredRate = (100-deathsRate) || 0;
-    //     table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['countryRegion'] +" "+ data[i]['provinceState'] +" </td><td>"+ Number(data[i]['confirmed']).toLocaleString() +"</td><td>"+ Number(data[i]['recovered']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['deaths']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
-    // });
-
     Object.keys(data).forEach(function(xitem, i) {
         // console.log("Country_Region", data[i]['attributes']['Country_Region']);
-        var deathsRate = (data[i]['attributes']['Deaths']/data[i]['attributes']['Confirmed'])*100 || 0;
+        var deathsRate = (data[i]['attributes']['Kasus_Meni']/data[i]['attributes']['Kasus_Posi'])*100 || 0;
         var recoveredRate = (100-deathsRate) || 0;
-        table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['attributes']['Country_Region'] +" </td><td>"+ Number(data[i]['attributes']['Confirmed']).toLocaleString() +"</td><td>"+ Number(data[i]['attributes']['Recovered']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['attributes']['Deaths']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
+        table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['attributes']['Provinsi'] +" </td><td>"+ Number(data[i]['attributes']['Kasus_Posi']).toLocaleString() +"</td><td>"+ Number(data[i]['attributes']['Kasus_Semb']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['attributes']['Kasus_Meni']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
     });
 
     document.getElementById("myTB").getElementsByTagName('tbody')[0].innerHTML = table;
     // doSomethingElse()
 
-    const sumConfirmed = data.map(item => item.attributes.Confirmed).reduce((prev, curr) => prev + curr, 0);
-    const sumRecovered = data.map(item => item.attributes.Recovered).reduce((prev, curr) => prev + curr, 0);
-    const sumDeaths = data.map(item => item.attributes.Deaths).reduce((prev, curr) => prev + curr, 0);
-    // console.log("sumConfirmed", sumConfirmed);
-    // console.log("sumRecovered", sumRecovered);
-    // console.log("sumDeaths", sumDeaths);
+    let sumConfirmed = data.map(o => o.attributes.Kasus_Posi).reduce((a, c) => { return a + c });
+    let sumRecovered = data.map(o => o.attributes.Kasus_Semb).reduce((a, c) => { return a + c });
+    let sumDeaths = data.map(o => o.attributes.Kasus_Meni).reduce((a, c) => { return a + c });
     document.getElementById("confirmed").innerHTML = sumConfirmed.toLocaleString();
     document.getElementById("recovered").innerHTML = sumRecovered.toLocaleString();
     document.getElementById("deaths").innerHTML = sumDeaths.toLocaleString();
+
+    var today = new Date();
+    document.getElementById("lastUpdate").innerHTML = moment(today).format('LLL');
     
 })
 .catch(error => {
