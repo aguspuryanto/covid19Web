@@ -1,0 +1,170 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <title>Starter Template · Bootstrap</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/starter-template/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- Favicons -->
+    <meta name="theme-color" content="#563d7c">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="starter-template.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <main role="main" class="container">
+
+    <div class="starter-template">
+        <h1>Tracking Coronavirus COVID-19</h1>
+        <p class="lead">Last Update :<span id="lastUpdate"></span></p>
+        <div class="container">
+            <div class="row"> 
+                <div class="col-lg-4 col-sm-6 col-md-6 text-center">
+                    <span class="counter" id="confirmed"></span>
+                    <h5>Confirmed</h5>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-md-6 text-center">
+                    <span class="counter" id="recovered"></span>
+                    <h5>Recovered</h5>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-md-6 text-center">
+                    <span class="counter" id="deaths"></span>
+                    <h5>Deaths</h5>
+                </div>             
+            </div>
+        </div>
+
+        <section>
+            <div class="row">
+                <table id="myTB" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Countries</th>
+                        <th scope="col">Confirmed</th>
+                        <th scope="col">Recovered</th>
+                        <th scope="col">Deaths</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    </main><!-- /.container -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+function makeAjaxCall(url, methodType, callback){
+    return $.ajax({
+        url : url,
+        method : methodType,
+        dataType : "json"
+    })
+}
+
+// git hub url to get btford details
+var URL = "https://covid19.mathdro.id/api/";
+makeAjaxCall(URL, "GET").then(function(respJson){
+    // console.log(respJson);
+    document.getElementById("confirmed").innerHTML = respJson.confirmed.value.toLocaleString();
+    document.getElementById("recovered").innerHTML = respJson.recovered.value.toLocaleString();
+    document.getElementById("deaths").innerHTML = respJson.deaths.value.toLocaleString();
+    document.getElementById("lastUpdate").innerHTML = new Date(respJson.lastUpdate).toDateString();
+}, function(reason){
+    console.log("error in processing your request", reason);
+});
+</script>
+
+<script>
+function doTheThing() {
+    var date = new Date();
+    date.setDate(date.getDate() - 1);
+    var newdate = [date.getMonth() + 1, ('0' + date.getDate()).slice(-2), date.getFullYear()].join('-');
+    // console.log("date:", newdate);
+    
+    // return JSON.parse(localStorage.getItem('doTheThing'));
+    // https://api.kawalcorona.com/
+    return new Promise((resolve, reject) => {
+        $.ajax({
+        // url: "https://covid19.mathdro.id/api/daily/" + newdate,
+        url: "https://api.kawalcorona.com/",
+        success: function(data) {
+            // console.log("data", data);
+            resolve(data)
+        },
+        error: function(error) {
+            reject(error)
+        },
+        })
+    })
+}
+
+doTheThing().then(data => {
+    var table = "";
+    // Object.keys(data).forEach(function(xitem, i) {
+    //     var deathsRate = (data[i]['deaths']/data[i]['confirmed'])*100 || 0;
+    //     var recoveredRate = (100-deathsRate) || 0;
+    //     table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['countryRegion'] +" "+ data[i]['provinceState'] +" </td><td>"+ Number(data[i]['confirmed']).toLocaleString() +"</td><td>"+ Number(data[i]['recovered']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['deaths']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
+    // });
+
+    Object.keys(data).forEach(function(xitem, i) {
+        // console.log("Country_Region", data[i]['attributes']['Country_Region']);
+        var deathsRate = (data[i]['attributes']['Deaths']/data[i]['attributes']['Confirmed'])*100 || 0;
+        var recoveredRate = (100-deathsRate) || 0;
+        table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['attributes']['Country_Region'] +" </td><td>"+ Number(data[i]['attributes']['Confirmed']).toLocaleString() +"</td><td>"+ Number(data[i]['attributes']['Recovered']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['attributes']['Deaths']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
+    });
+
+    document.getElementById("myTB").getElementsByTagName('tbody')[0].innerHTML = table;
+    // doSomethingElse()
+
+    // const sumConfirmed = data.map(item => item.attributes.Confirmed).reduce((prev, curr) => prev + curr, 0);
+    let sumConfirmed = data.map(o => o.attributes.Confirmed).reduce((a, c) => { return a + c });
+    const sumRecovered = data.map(item => item.attributes.Recovered).reduce((prev, curr) => prev + curr, 0);
+    const sumDeaths = data.map(item => item.attributes.Deaths).reduce((prev, curr) => prev + curr, 0);
+    // console.log("sumConfirmed", sumConfirmed);
+    // console.log("sumRecovered", sumRecovered);
+    // console.log("sumDeaths", sumDeaths);
+    document.getElementById("confirmed").innerHTML = sumConfirmed.toLocaleString();
+    document.getElementById("recovered").innerHTML = sumRecovered.toLocaleString();
+    document.getElementById("deaths").innerHTML = sumDeaths.toLocaleString();
+    
+})
+.catch(error => {
+    // console.log(error)
+})
+</script>
+</body>
+</html>
