@@ -146,8 +146,19 @@ doTheThing().then(data => {
         var recoveredRate = (100-deathsRate) || 0;
         table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['attributes']['Country_Region'] +" </td><td>"+ Number(data[i]['attributes']['Confirmed']).toLocaleString() +"</td><td>"+ Number(data[i]['attributes']['Recovered']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['attributes']['Deaths']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
     });
+
     document.getElementById("myTB").getElementsByTagName('tbody')[0].innerHTML = table;
     // doSomethingElse()
+
+    const sumConfirmed = data.map(item => item.attributes.Confirmed).reduce((prev, curr) => prev + curr, 0);
+    const sumRecovered = data.map(item => item.attributes.Recovered).reduce((prev, curr) => prev + curr, 0);
+    const sumDeaths = data.map(item => item.attributes.Deaths).reduce((prev, curr) => prev + curr, 0);
+    // console.log("sumConfirmed", sumConfirmed);
+    // console.log("sumRecovered", sumRecovered);
+    // console.log("sumDeaths", sumDeaths);
+    document.getElementById("confirmed").innerHTML = sumConfirmed.toLocaleString();
+    document.getElementById("recovered").innerHTML = sumRecovered.toLocaleString();
+    document.getElementById("deaths").innerHTML = sumDeaths.toLocaleString();
     
 })
 .catch(error => {
