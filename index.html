@@ -8,12 +8,9 @@
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v3.8.6">
     <title>Starter Template · Bootstrap</title>
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/starter-template/">
-
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
+    <!-- <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"> -->
     <!-- Favicons -->
     <meta name="theme-color" content="#563d7c">
     <style>
@@ -37,20 +34,22 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-        <!-- <a class="navbar-brand" href="#">Navbar</a> -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="container d-flex justify-content-between">
+            <!-- <a class="navbar-brand" href="#">Navbar</a> -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="index.html">Indonesia<span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="global.html">Semua Negara</a>
-              </li>
-            </ul>
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Indonesia<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="global.html">Semua Negara</a>
+                </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -63,22 +62,22 @@
             <div class="row"> 
                 <div class="col-lg-4 col-sm-6 col-md-6 text-center">
                     <span class="counter" id="confirmed"></span>
-                    <h5>Confirmed</h5>
+                    <h5>POSITIF</h5>
                 </div>
                 <div class="col-lg-4 col-sm-6 col-md-6 text-center">
                     <span class="counter" id="recovered"></span>
-                    <h5>Recovered</h5>
+                    <h5>SEMBUH</h5>
                 </div>
                 <div class="col-lg-4 col-sm-6 col-md-6 text-center">
                     <span class="counter" id="deaths"></span>
-                    <h5>Deaths</h5>
+                    <h5>MENINGGAL</h5>
                 </div>             
             </div>
         </div>
 
         <section>
             <div class="row">
-                <table id="myTB" class="table table-bordered table-striped">
+                <table id="myTable" class="table table-bordered table-striped" style="width:100%">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -97,6 +96,7 @@
 
     </main><!-- /.container -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script>
 function doTheThing() {
@@ -123,7 +123,7 @@ doTheThing().then(data => {
         table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['attributes']['Provinsi'] +" </td><td>"+ Number(data[i]['attributes']['Kasus_Posi']).toLocaleString() +"</td><td>"+ Number(data[i]['attributes']['Kasus_Semb']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['attributes']['Kasus_Meni']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
     });
 
-    document.getElementById("myTB").getElementsByTagName('tbody')[0].innerHTML = table;
+    document.getElementById("myTable").getElementsByTagName('tbody')[0].innerHTML = table;
     // doSomethingElse()
 
     let sumConfirmed = data.map(o => o.attributes.Kasus_Posi).reduce((a, c) => { return a + c });
@@ -140,6 +140,11 @@ doTheThing().then(data => {
 .catch(error => {
     // console.log(error)
 })
+</script>
+<script>
+$(document).ready( function () {
+    // $('#myTable').DataTable();
+});
 </script>
 </body>
 </html>
